@@ -18,29 +18,29 @@ package main
 import "github.com/seedjyh/defergroup"
 
 func NewResource() (*Resource, error) {
-    // 在最开头创建一个 DeferGroup 并 defer 其 Do
+	// 在最开头创建一个 DeferGroup 并 defer 其 Do
 	dg := new(DeferGroup)
 	defer dg.Do()
 
 	res := new(Resource)
 
-    if a, err := OpenA(); err != nil {
-        return nil, err
-    } else {
-        res.a = a
-        dg.Register(func(){ CloseA(a) }) // 每申请成功一个「子资源」就将其关闭函数注册到 dg
-    }
+	if a, err := OpenA(); err != nil {
+		return nil, err
+	} else {
+		res.a = a
+		dg.Register(func() { CloseA(a) }) // 每申请成功一个「子资源」就将其关闭函数注册到 dg
+	}
 
+	if b, err := OpenB(); err != nil {
+		return nil, err
+	} else {
+		res.b = b
+		dg.Register(func() { CloseB(b) })
+	}
 
-    if b, err := OpenB(); err != nil {
-        return nil, err
-    } else {
-        res.b = b
-        dg.Register(func(){ CloseB(b) })
-    }
-
-    // 执行这个 UnregisterAll 可以去掉所有已注册的 Close 函数，从而避免 defer 影响
+	// 执行这个 UnregisterAll 可以去掉所有已注册的 Close 函数，从而避免 defer 影响
 	dg.UnregisterAll()
 	return res, nil
 }
+
 ```
