@@ -17,6 +17,11 @@ package main
 
 import "github.com/seedjyh/defergroup"
 
+type Resource struct {
+	a *A
+	b *B
+}
+
 func NewResource() (*Resource, error) {
 	// 在最开头创建一个 DeferGroup 并 defer 其 Do
 	dg := new(DeferGroup)
